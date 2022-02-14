@@ -1,65 +1,48 @@
 ﻿using System;
+using System.Text;
 
 namespace Polyakov.Search
 {
     public class Data
     {
-        private float[] keyField = new float[3];
-        public float[] KeyField
+        public float[] Key
         {
-            get
-            {
-                float[] output = new float[3];
-                for (int i = 0; i < 3; i++)
-                {
-                    output[i] = keyField[i];
-                }
-                return output;
-            }
+            get => (float[])key.Clone();
 
             set
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    keyField[i] = value[i];
-                }
-            }
+                if (value.Length != key.Length)
+                    throw new ArgumentException("Key must be float[3].");
+                key = (float[])value.Clone();
+            }       
         }
-        public int[] DataInt { get; set; }
-        public char[] DataChar { get; set; }
+        public int[] DataInts { get; set; }
+        public char[] DataChars { get; set; }
         public float DataFloat { get; set; }
 
-        public Data(float[] keyField)
-        {
-            KeyField = keyField;
-            DataInt = new int[3] { 1, 2, 3 };
-            DataChar = new char[3] { 'a', 'b', 'c' };
-            DataFloat = 1.23f;
-        }
+        private float[] key = new float[3];
+
+        public Data() { }
 
         public override string ToString()
         {
-            string output = "Ключ: ";
+            var output = new StringBuilder();
 
-            for (int i = 0; i < 3; i++)
-            {
-                output += keyField[i] + "  ";
-            }
-            output += "\nint[]: ";
+            output.Append("Key: ");
+            foreach(var x in key)
+                output.Append(x + "  ");
 
-            for (int i = 0; i < 3; i++)
-            {
-                output += DataInt[i] + "  ";
-            }
-            output += "\nchar[]: ";
+            output.Append(Environment.NewLine + "int[]: ");
+            foreach (var x in DataInts)
+                output.Append(x + "  ");
 
-            for (int i = 0; i < 3; i++)
-            {
-                output += DataChar[i] + "  ";
-            }
-            output += "\nfloat: " + DataFloat;
+            output.Append(Environment.NewLine + "char[]: ");
+            foreach (var x in DataChars)
+                output.Append(x + "  ");
 
-            return output;
+            output.Append(Environment.NewLine + "float: " + DataFloat);
+
+            return output.ToString(); ;
         }
     }
 }

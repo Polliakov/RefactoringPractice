@@ -1,95 +1,58 @@
 ﻿using System;
+using System.Linq;
 
 namespace Polyakov.Search
 {
-    public class Cache
+    public class DataCache : IComparable<DataCache>
     {
-        public int Index { get; }
+        public int DataId { get; private set; }
+        public float[] Key { get => keyField; set => keyField = value; }
 
         private float[] keyField = new float[3];
-        public float[] KeyField
-        {
-            get
-            {
-                float[] output = new float[3];
-                for (int i = 0; i < 3; i++)
-                {
-                    output[i] = keyField[i];
-                }
-                return output;
-            }
 
-            set
+        public static DataCache[] CacheData(Data[] data)
+        {
+            var cache = new DataCache[data.Length];
+            if (cache.Length == 0) return cache;
+
+            for (int i = 0; i < cache.Length; i++)
             {
-                for (int i = 0; i < 3; i++)
+                cache[i] = new DataCache
                 {
-                    keyField[i] = value[i];
-                }
+                    DataId = i,
+                    Key = data[i].Key,
+                };
             }
+            return cache;
         }
 
-        public Cache(int index, float[] keyField)
+        public int CompareTo(DataCache other)
         {
-            Index = index;
-            KeyField = keyField;
+            if (other is null) return -1;
+
+            for (int i = 0; i < Key.Length; i++)
+            {
+                if (Key[i] > other.Key[i])
+                    return 1;
+
+                else if (Key[i] < other.Key[i])
+                    return -1;
+            }
+            return 0;
         }
 
-        public static bool operator == (Cache first, Cache second)
+        public override bool Equals(object obj)
         {
-            if (first.KeyField[0] == second.KeyField[0] &&
-                first.KeyField[1] == second.KeyField[1] &&
-                first.KeyField[2] == second.KeyField[2])
-            {
+            if (ReferenceEquals(this, obj))
                 return true;
-            }
-            else
-            {
+            if (obj is null)
                 return false;
-            }
-        }
-        public static bool operator != (Cache first, Cache second)
-        {
-            if (first.KeyField[0] == second.KeyField[0] &&
-                first.KeyField[1] == second.KeyField[1] &&
-                first.KeyField[2] == second.KeyField[2])
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        public static bool operator < (Cache first, Cache second)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (first.KeyField[i] < second.KeyField[i])
-                {
-                    return true;
-                }
-                else if (first.KeyField[i] > second.KeyField[i])
-                {
-                    return false;
-                }
-            }
-            return false;
-        }
-        public static bool operator > (Cache first, Cache second)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                if (first.KeyField[i] > second.KeyField[i])
-                {
-                    return true;
-                }
-                else if (first.KeyField[i] < second.KeyField[i])
-                {
-                    return false;
-                }
-            }
-            return false;
-        }
 
+            var dataCach = obj as DataCache;
+            if (dataCach is null)
+                return false;
+            else
+                return Key.SequenceEqual(dataCach.Key);
+        }
     }
 }
